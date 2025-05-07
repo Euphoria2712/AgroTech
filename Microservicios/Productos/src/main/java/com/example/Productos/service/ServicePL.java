@@ -2,14 +2,12 @@ package com.example.Productos.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.Productos.Model.Producto;
 import com.example.Productos.Repository.ProductoRepository;
 
 import java.util.List;
+
 
 @Service
 public class ServicePL implements ServiceP {
@@ -34,10 +32,8 @@ public class ServicePL implements ServiceP {
 
     }
 
-    @Override 
-    @RequestMapping(value = "/productos/{id}", method = RequestMethod.PUT)
-    public Producto modificarProducto(@PathVariable Long id, @RequestBody Producto producto){
-        Producto productoExistente = productoRepository.findById(id).orElseThrow()(() -> new RuntimeException("Producto no encontrado"));
+    public Producto modificarProducto(Long id, Producto producto){
+        Producto productoExistente = productoRepository.findById(id).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         productoExistente.setNombre(producto.getNombre());
         productoExistente.setDescripcion(producto.getDescripcion());
@@ -46,8 +42,7 @@ public class ServicePL implements ServiceP {
         return productoRepository.save(productoExistente);
     }
      
-
-
+    @Override
     public void eliminarProductoPorId(Long id) {
         productoRepository.deleteById(id);
     }
