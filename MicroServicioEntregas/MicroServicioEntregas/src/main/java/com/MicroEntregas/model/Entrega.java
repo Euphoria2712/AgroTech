@@ -23,4 +23,6 @@ public class Entrega {
     private String transportista;
     private String estado;
     private String observaciones;
-}   
+    private String fechaCreacion;
+    private String fechaEntrega;
+}
