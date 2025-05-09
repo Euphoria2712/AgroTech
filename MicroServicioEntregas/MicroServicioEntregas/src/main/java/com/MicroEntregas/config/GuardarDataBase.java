@@ -16,9 +16,9 @@ public class GuardarDataBase {
         return args -> {
             //crear datos iniciales
             // el null lo creamos ya que el id es autogenerado por la base
-            
+            entregaRepository.deleteAll();
 
-            
+            entregaRepository.resetAutoIncrement();
             
             Entrega entrega1 = new Entrega(null,"Transportista A","2023-10-01","2023-10-02", null, null);
             Entrega entrega2 = new Entrega(null,"transportista B","2024-10-02","2024-10-03", null, null);
