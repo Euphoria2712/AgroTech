@@ -13,4 +13,6 @@ public interface TransportistaRepository extends JpaRepository<Transportista, Lo
 
     Transportista save(Transportista t);
 
+    Object findById(long id);
+
 }
