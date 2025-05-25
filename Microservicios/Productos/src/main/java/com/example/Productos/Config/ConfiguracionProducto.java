@@ -3,7 +3,6 @@ package com.example.Productos.Config;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.yaml.snakeyaml.events.Event.ID;
 
 import com.example.Productos.Model.Producto;
 import com.example.Productos.Repository.ProductoRepository;

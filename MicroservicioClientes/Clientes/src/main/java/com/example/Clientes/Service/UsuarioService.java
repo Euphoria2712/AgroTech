@@ -41,4 +41,8 @@ public class UsuarioService {
         return usuarioRepository.save(usuarioExistente);
     }
 
+    public Usuarios buscarPorCorreo(String correo){
+        return usuarioRepository.findByCorreo(correo);
+    }
+
 }

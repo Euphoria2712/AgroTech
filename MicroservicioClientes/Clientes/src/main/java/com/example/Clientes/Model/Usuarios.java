@@ -24,7 +24,7 @@ public class Usuarios {
     private String contraseña;
     private String telefono;
     private String direccion;
+    private String rol;
     
-
 
 }
