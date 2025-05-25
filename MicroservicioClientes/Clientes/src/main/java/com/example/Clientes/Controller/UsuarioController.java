@@ -62,7 +62,7 @@ public class UsuarioController {
         Usuarios usuario = usuarioService.buscarPorCorreo(LoginRequisito.getCorreo());
 
         if(usuario != null && usuario.getContraseña().equals(LoginRequisito.getContraseña())){
-           return ResponseEntity.ok("Login exitoso, Bienvendio "+usuario.getRol());
+           return ResponseEntity.ok("Login exitoso, Bienvendio "+usuario.getNombre());
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
         }
