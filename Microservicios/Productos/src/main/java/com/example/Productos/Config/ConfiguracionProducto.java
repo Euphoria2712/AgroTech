@@ -3,6 +3,7 @@ package com.example.Productos.Config;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.example.Productos.Model.Producto;
 import com.example.Productos.Repository.ProductoRepository;
@@ -31,5 +32,10 @@ public class ConfiguracionProducto {
         };
  
 
+    }
+
+    @Bean
+    public WebClient webClient(WebClient.Builder builder) {
+        return builder.baseUrl("http://localhost:8084/api/v1/productos").build();
     }
 }
