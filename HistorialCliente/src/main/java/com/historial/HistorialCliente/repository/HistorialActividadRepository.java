@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.historial.HistorialCliente.model.HistorialActividad;
-
-import java.util.List;
 public interface HistorialActividadRepository extends JpaRepository<HistorialActividad, Long> {
     List<HistorialActividad> findByIdCliente(Long idCliente);
     List<HistorialActividad> findByTipoActividad(String tipoActividad);
