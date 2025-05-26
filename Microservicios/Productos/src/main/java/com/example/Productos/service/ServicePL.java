@@ -60,8 +60,8 @@ public class ServicePL implements ServiceP {
         return nuevo;
     }
 
-    private void notificarNuevoStock(Long productoId, int cantidad, int minimo) {
-        StockRequest request = new StockRequest(productoId, cantidad, minimo);
+    private void notificarNuevoStock(Long productoId, int cantidadActual, int cantidadMinima) {
+        StockRequest request = new StockRequest(productoId, cantidadActual, cantidadMinima);
 
         webClient.post()
                 .bodyValue(request)

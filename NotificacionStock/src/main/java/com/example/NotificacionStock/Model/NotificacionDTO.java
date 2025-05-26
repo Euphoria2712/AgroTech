@@ -12,5 +12,6 @@ public class NotificacionDTO {
     private Long productoId;
     private String nombreProducto;
     private String mensaje;
+    private String tipo;
 }
 

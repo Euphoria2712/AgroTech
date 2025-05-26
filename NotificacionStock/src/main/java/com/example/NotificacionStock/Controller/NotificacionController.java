@@ -33,9 +33,12 @@ public class NotificacionController {
     
     @PostMapping
     public ResponseEntity<String> recibirNotificacion(@RequestBody NotificacionDTO notificacion) {
-        // Lógica para guardar o imprimir la notificación
-        System.out.println("Notificación recibida: " + notificacion.getMensaje());
-        return ResponseEntity.ok("Notificación recibida");
+        NotificacionInventario nueva = new NotificacionInventario();
+        nueva.setProductoId(notificacion.getProductoId());
+        nueva.setMensaje(notificacion.getMensaje());
+        nueva.setTipo(notificacion.getTipo());
+        notifiacionService.guardar(nueva);
+        return ResponseEntity.ok("Notificacion recibida y guardada correctamente");
     }
 
 

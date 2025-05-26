@@ -17,7 +17,7 @@ public class NotificationClient {
     public Mono<String> enviarNotificacion(NotificacionDTO dto) {
         return webClientBuilder.build()
                 .post()
-                .uri("http://localhost:8086/api/v1/notificaciones") // Puerto del micro de notificaciones
+                .uri("http://localhost:8086/api/v1/notificacion") // Puerto del micro de notificaciones
                 .bodyValue(dto)
                 .retrieve()
                 .bodyToMono(String.class);

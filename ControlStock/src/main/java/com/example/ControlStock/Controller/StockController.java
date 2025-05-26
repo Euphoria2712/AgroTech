@@ -86,7 +86,11 @@ public class StockController {
                 alerta.setMensaje("¡Stock bajo para el producto con ID " + productoId + "!");
                 alerta.setTipo("ALERTA");
 
-                notificacionClient.enviarNotificacion(alerta); // Usa WebClient
+                notificacionClient.enviarNotificacion(alerta)
+                    .subscribe(
+                        resp -> System.out.println("Notificación enviada: " + resp),
+                        error -> System.err.println("Error al enviar notificación: " + error.getMessage())
+                    );
 
                 return ResponseEntity.ok("Stock bajo. Notificación enviada.");
             } else {

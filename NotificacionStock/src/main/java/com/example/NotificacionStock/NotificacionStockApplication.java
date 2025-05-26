@@ -10,4 +10,6 @@ public class NotificacionStockApplication {
 		SpringApplication.run(NotificacionStockApplication.class, args);
 	}
 
+
+	
 }

@@ -16,6 +16,11 @@ public class NotificacionService {
     @Autowired
     private NotificacionRepositorio NotificacionRepositorio;
 
+
+    public void guardar(NotificacionInventario notificacion) {
+        NotificacionRepositorio.save(notificacion);
+    }
+
     public NotificacionInventario crearNotificacion(Long productoId, String mensaje, String tipo ) {
         NotificacionInventario notificacion = NotificacionInventario.builder()
                 .productoId(productoId)
