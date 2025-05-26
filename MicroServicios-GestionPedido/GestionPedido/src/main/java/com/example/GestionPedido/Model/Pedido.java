@@ -3,6 +3,7 @@ package com.example.GestionPedido.Model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+
 @Entity
 @Table(name = "pedidos")
 public class Pedido {

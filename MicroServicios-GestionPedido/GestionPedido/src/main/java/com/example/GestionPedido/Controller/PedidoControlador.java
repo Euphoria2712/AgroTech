@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/pedidos")
+@RequestMapping("api/v1/pedidos")
 public class PedidoControlador {
     @Autowired
     private PedidoService pedidoService;
 
     @PostMapping
-    public Pedido crearPedido(@RequestBody Pedido pedido) {
-        return pedidoService.crearPedido(pedido);
+    public ResponseEntity<String> crearPedido(@RequestBody Pedido pedido) {
+        return ResponseEntity.ok("Pedido creado:" + pedido.getNombre());
     }
 
     @PutMapping("/{id}/estado")
