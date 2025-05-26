@@ -16,7 +16,7 @@ public class PedidoControlador {
 
     @PostMapping
     public ResponseEntity<String> crearPedido(@RequestBody Pedido pedido) {
-        return ResponseEntity.ok("Pedido creado:" + pedido.getNombre());
+        return ResponseEntity.ok("Pedido creado:" + pedido.getId());
     }
 
     @PutMapping("/{id}/estado")

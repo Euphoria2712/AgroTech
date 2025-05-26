@@ -11,23 +11,29 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "transportista_id", nullable = false)
+    private String transportistaId;  // ID del transportista asignado al pedido
+
+    @Column(name = "cliente_id", nullable = false)
     private String clienteId;  // ID del cliente que hace el pedido
 
-    @Column(nullable = false)
+    @Column(name = "equipo_id", nullable = false)
     private String equipoId;  // ID del equipo agrícola (maquinaria)
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "tipo_pedido", nullable = false)
     private TipoPedido tipoPedido;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "estado", nullable = false)
     private EstadoPedido estado = EstadoPedido.PENDIENTE;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_pedido", nullable = false)
     private LocalDate fechaPedido = LocalDate.now();
 
+    @Column(name = "fecha_entrega", nullable = false)
+    @Temporal(TemporalType.DATE)
+    // @temporal para la ora
     private LocalDate fechaEntrega;
 
     private String condiciones;  // Condiciones especiales (ej: "Pago en 30 días")

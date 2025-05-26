@@ -5,36 +5,59 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import com.example.DisponibilidadAsignacion.Model.Disponibilidad;
 import com.example.DisponibilidadAsignacion.Model.Equipo;
-import com.example.DisponibilidadAsignacion.Model.EstadoDisponibilidad;
 import com.example.DisponibilidadAsignacion.Repository.DisponibilidadRepository;
 import com.example.DisponibilidadAsignacion.Repository.EquipoRepository;
 
 @Service
 
 public class DisponibilidadService {
-    
+    private static final String WEB_CLIENT_URL = "http://localhost:8080/api/v1/equipos";
+
+
     @Autowired
     private DisponibilidadRepository disponibilidadRepo;
 
     @Autowired 
     private EquipoRepository equipoRepo;
 
-    public List<Equipo> consultarDisponibilidad(LocalDate fechaInicio, LocalDate fechaFin, String tipoEquipo){
-        
-// Obtener equipos del tipo solicitando
-        List<Equipo> equipos = tipoEquipo != null ? 
-            equipoRepo.findByTipo(tipoEquipo):
+    @Autowired
+    private WebClientSsl webClient;
+
+    @Bean
+    public WebClientSsl webClient() {
+        return WebClientSsl.builder()
+            .baseUrl(WEB_CLIENT_URL)
+            .build();
+    }
+
+    // Ejemplo de consumo de otro microservicio
+    public Equipo obtenerEquipoRemoto(String equipoId) {
+        return webClient.get()
+            .uri("http://localhost:8080/api/v1/equipos/{id}", equipoId)
+            .retrieve()
+            .bodyToMono(Equipo.class)
+            .block();
+    }
+
+    // Obtener equipos del tipo solicitando
+    public List<Equipo> consultarDisponibilidad(LocalDate fechaInicio, LocalDate fechaFin, String tipoEquipo) {
+
+        // Obtener equipos del tipo solicitando
+        List<Equipo> equipos = tipoEquipo != null ?
+            equipoRepo.findByTipo(tipoEquipo) :
             equipoRepo.findByActivoTtrue();
 
-// Filtrar equipos disponibles
+        // Filtrar equipos disponibles
         return equipos.stream()
-        .filter(equipo -> {
-            List<Disponibilidad> disponibilidades = disponibilidadRepo
-            .findDisponibilidadPorRangoFechas(
+            .filter(equipo -> {
+                List<Disponibilidad> disponibilidades = disponibilidadRepo
+                    .findDisponibilidadPorRangoFechas(
                 equipo.getId(),
                 fechaInicio,
                 fechaFin);
@@ -54,11 +77,9 @@ public class DisponibilidadService {
         }
         Disponibilidad reserva = new Disponibilidad();
         reserva.setEquipoId(equipoId);
-        reserva.setPedidoId(pedidoId);
         reserva.setFechaInicio(fechaInicio);
-        reserva.setFechaFin(fechaFin);
-        reserva.setEstado(EstadoDisponibilidad.RESERVADO);
-    
+        
+
     disponibilidadRepo.save(reserva);
     return true;
     }
@@ -67,8 +88,7 @@ public class DisponibilidadService {
         List<Disponibilidad> asignaciones = disponibilidadRepo.findByPedidoId(pedidoId);
 
         asignaciones.forEach(asignacion -> {
-            asignacion.setPedidoId(null);
-            asignacion.setEstado(EstadoDisponibilidad.DISPONIBLE);
+            
             disponibilidadRepo.save(asignacion);
         });
 
