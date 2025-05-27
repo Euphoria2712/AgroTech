@@ -2,9 +2,14 @@ package com.example.GestionPedido.Service;
 
 import com.example.GestionPedido.Model.EstadoPedido;
 import com.example.GestionPedido.Model.Pedido;
+import com.example.GestionPedido.Model.ProductoDTO;
+import com.example.GestionPedido.Model.UsuariosDTO;
 import com.example.GestionPedido.Repository.PedidoRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,11 +17,46 @@ import java.util.Optional;
 
 @Service
 public class PedidoService {
+
+    @Autowired
+    private WebClient webClient;
+
     @Autowired
     private PedidoRepository pedidoRepository;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    private static final String TOPIC_PEDIDO = "pedidos";
+
+    // Consultar cliente (usa Usuarios como DTO, asegúrate de tener la clase Usuarios en tu proyecto)
+    public UsuariosDTO obtenerClientePorId(String clienteId) {
+        return webClient.get()
+                .uri("http://localhost:8080/api/v1/clientes/{id}", clienteId)
+                .retrieve()
+                .bodyToMono(UsuariosDTO.class)
+                .block();
+    }
+
+    // Consultar stock (usa Producto como DTO)
+    public ProductoDTO obtenerStockPorEquipoId(String equipoId) {
+        return webClient.get()
+                .uri("http://localhost:8081/api/v1/stock/{id}", equipoId)
+                .retrieve()
+                .bodyToMono(ProductoDTO.class)
+                .block();
+    }
+
+    // Enviar mensaje a Kafka
+    public void enviarMensajeKafka(String mensaje) {
+        kafkaTemplate.send(TOPIC_PEDIDO, mensaje);
+    }
+
+    // Crear pedido y enviar mensaje a Kafka
     public Pedido crearPedido(Pedido pedido) {
-        return pedidoRepository.save(pedido);
+        Pedido nuevoPedido = pedidoRepository.save(pedido);
+        enviarMensajeKafka(nuevoPedido.toString());
+        return nuevoPedido;
     }
 
     public Optional<Pedido> actualizarEstado(Long id, EstadoPedido nuevoEstado) {
