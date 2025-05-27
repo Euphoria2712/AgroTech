@@ -3,6 +3,7 @@ package com.example.GestionPedido.Service;
 import com.example.GestionPedido.Model.EstadoPedido;
 import com.example.GestionPedido.Model.Pedido;
 import com.example.GestionPedido.Model.ProductoDTO;
+import com.example.GestionPedido.Model.TipoPedido;
 import com.example.GestionPedido.Model.UsuariosDTO;
 import com.example.GestionPedido.Repository.PedidoRepository;
 
@@ -83,21 +84,37 @@ public class PedidoService {
     }
 
     public List<Pedido> obtenerPorCliente(String clienteId) {
-        return pedidoRepository.findByClienteId(clienteId);
+        return pedidoRepository.findByClienteId(clienteId); //
     }
 
     public List<Pedido> obtenerPorEstado(EstadoPedido estado) {
         return pedidoRepository.findByEstado(estado);
     }
 
-    public String crearPedido(Long clienteId, Long productoId, int cantidad) {
-        String resultado = stockClient.ajustarStock(clienteId, productoId, cantidad).block();
+    public String crearPedido(Long Id, Long productoId, int cantidad) {
+        // Llamar al microservicio de stock
+        String resultado = stockClient.ajustarStock(Id, productoId, cantidad).block();
 
         if (resultado.contains("Error")) {
             throw new RuntimeException("No se pudo ajustar el stock: " + resultado);
         }
 
-        // Aquí guardarías el pedido si todo sale bien (opcional)
+        // ✅ Crear y guardar el pedido
+        Pedido pedido = new Pedido();
+        pedido.setClienteId(String.valueOf(Id)); // clienteId es String en tu entidad
+        pedido.setIdProducto(productoId);
+        pedido.setCantidad(cantidad);
+        pedido.setFechaPedido(LocalDate.now());
+        pedido.setEstado(EstadoPedido.PENDIENTE);
+
+        // Puedes completar los demás campos con valores predeterminados o por lógica
+        pedido.setTransportistaId("porAsignar");
+        pedido.setEquipoId("equipoX"); // este campo es obligatorio según tu entidad
+        pedido.setTipoPedido(TipoPedido.STANDARD);
+        pedido.setFechaEntrega(LocalDate.now().plusDays(5));
+        pedido.setCondiciones("Condiciones normales");
+
+        pedidoRepository.save(pedido);
 
         return "Pedido creado y stock ajustado correctamente";
     }

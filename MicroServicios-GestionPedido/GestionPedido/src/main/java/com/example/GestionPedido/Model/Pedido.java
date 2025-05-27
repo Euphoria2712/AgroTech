@@ -1,8 +1,9 @@
 package com.example.GestionPedido.Model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "pedidos")
@@ -70,4 +71,10 @@ public class Pedido {
 
     public String getCondiciones() { return condiciones; }
     public void setCondiciones(String condiciones) { this.condiciones = condiciones; }
+    public void setCantidad(int cantidad) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setCantidad'");
+    }
+
+    
 }

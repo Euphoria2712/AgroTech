@@ -1,5 +1,6 @@
 package com.example.GestionPedido.Controller;
 
+import com.example.GestionPedido.Model.AjusteStockDTO;
 import com.example.GestionPedido.Model.EstadoPedido;
 import com.example.GestionPedido.Model.Pedido;
 import com.example.GestionPedido.Service.PedidoService;
@@ -52,11 +53,9 @@ public class PedidoControlador {
     }
 
     @PostMapping("/crear")
-    public ResponseEntity<?> crearPedido(@RequestParam Long clienteId,
-            @RequestParam Long productoId,
-            @RequestParam int cantidad) {
+    public ResponseEntity<?> crearPedido(@RequestBody AjusteStockDTO dto) {
         try {
-            String respuesta = pedidoService.crearPedido(clienteId, productoId, cantidad);
+            String respuesta = pedidoService.crearPedido(dto.getId(), dto.getProductoId(), dto.getCantidad());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

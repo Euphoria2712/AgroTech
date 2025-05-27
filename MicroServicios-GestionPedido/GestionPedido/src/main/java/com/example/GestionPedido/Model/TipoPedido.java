@@ -5,5 +5,5 @@ public enum TipoPedido {
     EN_PREPARACION,
     ENVIADO,
     ENTREGADO,
-    CANCELADO
+    CANCELADO, STANDARD
 }

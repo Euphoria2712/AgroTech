@@ -20,11 +20,11 @@ public class StockClient {
                 .build();
     }
 
-    public Mono<String> ajustarStock(Long clienteId, Long productoId, int cantidad) {
+    public Mono<String> ajustarStock(Long id, Long productoId, int cantidad) {
         AjusteStockDTO dto = new AjusteStockDTO();
-        dto.setId(clienteId);
+        dto.setId(id);
         dto.setProductoId(productoId);
-        dto.setCantidadSolicitada(cantidad);
+        dto.setCantidad(cantidad);
 
         return webClient.post()
                 .uri("/ajustar")
