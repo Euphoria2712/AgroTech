@@ -2,12 +2,6 @@ package com.example.DisponibilidadAsignacion.Model;
 
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl;
-
-import com.example.DisponibilidadAsignacion.Repository.DisponibilidadRepository;
-import com.example.DisponibilidadAsignacion.Repository.EquipoRepository;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

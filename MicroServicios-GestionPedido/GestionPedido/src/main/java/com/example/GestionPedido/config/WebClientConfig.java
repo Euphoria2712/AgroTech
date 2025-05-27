@@ -1,4 +1,5 @@
-package com.example.GestionPedido.Conf;
+package com.example.GestionPedido.config;
+
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

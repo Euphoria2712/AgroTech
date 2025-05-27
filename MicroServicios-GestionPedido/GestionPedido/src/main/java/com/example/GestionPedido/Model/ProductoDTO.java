@@ -1,5 +1,7 @@
 package com.example.GestionPedido.Model;
+
 import lombok.Data;
+
 @Data
 public class ProductoDTO {
     private Long id;

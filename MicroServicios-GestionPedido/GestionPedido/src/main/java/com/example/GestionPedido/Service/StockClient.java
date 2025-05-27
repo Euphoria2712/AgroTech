@@ -1,0 +1,39 @@
+package com.example.GestionPedido.Service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import com.example.GestionPedido.Model.AjusteStockDTO;
+
+import reactor.core.publisher.Mono;
+
+@Service
+public class StockClient {
+
+    private final WebClient webClient;
+
+    @Autowired
+    public StockClient(WebClient.Builder builder) {
+        this.webClient = builder
+                .baseUrl("http://localhost:8084/api/v1/stock")
+                .build();
+    }
+
+    public Mono<String> ajustarStock(Long clienteId, Long productoId, int cantidad) {
+        AjusteStockDTO dto = new AjusteStockDTO();
+        dto.setId(clienteId);
+        dto.setProductoId(productoId);
+        dto.setCantidadSolicitada(cantidad);
+
+        return webClient.post()
+                .uri("/ajustar")
+                .bodyValue(dto)
+                .retrieve()
+                .bodyToMono(String.class)
+                .onErrorResume(e -> {
+                    System.out.println(" Error al ajustar stock: " + e.getMessage());
+                    return Mono.just("Error al ajustar stock");
+                });
+    }
+}

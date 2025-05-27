@@ -4,6 +4,7 @@ import com.example.GestionPedido.Model.EstadoPedido;
 import com.example.GestionPedido.Model.Pedido;
 import com.example.GestionPedido.Service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -48,5 +49,18 @@ public class PedidoControlador {
     @GetMapping("/estado/{estado}")
     public List<Pedido> obtenerPorEstado(@PathVariable EstadoPedido estado) {
         return pedidoService.obtenerPorEstado(estado);
+    }
+
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearPedido(@RequestParam Long clienteId,
+            @RequestParam Long productoId,
+            @RequestParam int cantidad) {
+        try {
+            String respuesta = pedidoService.crearPedido(clienteId, productoId, cantidad);
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
+        }
     }
 }
