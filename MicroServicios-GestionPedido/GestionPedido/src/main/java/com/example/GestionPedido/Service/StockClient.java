@@ -1,6 +1,7 @@
 package com.example.GestionPedido.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -23,6 +24,7 @@ public class StockClient {
         dto.setId(id);
         dto.setProductoId(productoId);
         dto.setCantidadSolicitada(cantidad);
+
 
         return webClient.post()
                 .uri("/ajustar")
