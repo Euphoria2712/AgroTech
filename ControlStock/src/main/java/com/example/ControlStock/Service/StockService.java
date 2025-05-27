@@ -21,7 +21,7 @@ public Stock ajustarStock(Long productoId, int cantidad) {
                 .cantidadMinima(5)
                 .build());
 
-    stock.setCantidadActual(stock.getCantidadActual() + cantidad);
+    stock.setCantidadActual(stock.getCantidadActual() - cantidad);
     return StockRepositorio.save(stock);
 }
 

@@ -3,17 +3,21 @@ package com.example.ControlStock.Controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.ControlStock.Model.AjusteStockRequest;
+import com.example.ControlStock.Model.AjusteStockDTO;
+
 import com.example.ControlStock.Model.ConsultaStockRequest;
 import com.example.ControlStock.Model.NotificacionDTO;
 import com.example.ControlStock.Model.Stock;
+import com.example.ControlStock.Model.UsuarioDTO;
 import com.example.ControlStock.Repository.StockRepositorio;
+import com.example.ControlStock.Service.ClientClient;
 import com.example.ControlStock.Service.NotificationClient;
 import com.example.ControlStock.Service.ProductoClient;
 import com.example.ControlStock.Service.StockService;
@@ -41,17 +45,37 @@ public class StockController {
     @Autowired
     private NotificationClient notificacionClient;
 
-    @PostMapping("/ajustar")
-    public ResponseEntity<?> ajustarStock(@RequestBody AjusteStockRequest request) {
-        try {
-            Stock stock = StockService.ajustarStock(request.getProductoId(), request.getCantidad());
-            return ResponseEntity.ok("Stock ajustado " + stock);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al ajustar el stock: " + e.getMessage());
+    @Autowired
+    private ClientClient ClientClient;
+
+@PostMapping("/ajustar")
+public ResponseEntity<?> ajustarStock(@RequestBody AjusteStockDTO request) {
+    try {
+        // Validar cliente
+        UsuarioDTO usuario = ClientClient.obtenerUsuarioPorId(request.getId()).block();
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(" Usuario no encontrado con ID: " + request.getId());
         }
 
+        // Ajustar stock a través del servicio
+        Stock stock = StockService.ajustarStock(request.getProductoId(), request.getCantidadSolicitada());
+
+        // Verificar si después del ajuste el stock quedó bajo el mínimo
+        if (stock.getCantidadActual() < stock.getCantidadMinima()) {
+            NotificacionDTO alerta = new NotificacionDTO();
+            alerta.setProductoId(stock.getProductoId());
+            alerta.setMensaje(" Stock crítico tras ajuste. Producto ID: " + stock.getProductoId());
+            alerta.setTipo("ALERTA");
+            notificacionClient.enviarNotificacion(alerta).subscribe();
+        }
+
+        return ResponseEntity.ok(" Stock ajustado correctamente para el producto " + stock.getProductoId());
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(" Error al ajustar el stock: " + e.getMessage());
     }
+}
 
     @PostMapping("/consultar")
     public ResponseEntity<?> consultarStock(@RequestBody ConsultaStockRequest request) {
@@ -108,4 +132,17 @@ public class StockController {
         return ResponseEntity.ok(nuevo);
     }
 
+    @GetMapping("/Validarcliente/{id}")
+    public  ResponseEntity<String> validarCliente(@PathVariable Long id) {
+        ClientClient.obtenerUsuarioPorId(id)
+        .subscribe(usuario -> {
+            System.out.println("Usuario obtenido: " + usuario.getNombre());
+            
+        }, error -> {
+            System.err.println("Error al obtener el usuario: " + error.getMessage());
+
+    });
+
+        return ResponseEntity.ok("Cliente validado correctamente revisar consola");
+    }
 }

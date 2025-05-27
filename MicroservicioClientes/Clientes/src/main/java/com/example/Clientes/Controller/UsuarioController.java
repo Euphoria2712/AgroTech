@@ -7,8 +7,6 @@ import com.example.Clientes.Model.LoginRequisito;
 import com.example.Clientes.Model.Usuarios;
 import com.example.Clientes.Service.UsuarioService;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 
-@RequestMapping("api/v1/usuarios")
+@RequestMapping("/api/v1/usuarios")
 @RestController
 public class UsuarioController {
 
@@ -31,28 +29,59 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public Usuarios guardarUsuario(@RequestBody Usuarios usuario) {
-        return usuarioService.guardarUsuario(usuario);
+    public ResponseEntity<?> guardarUsuario(@RequestBody Usuarios usuario){
+        try {
+            Usuarios nuevo = usuarioService.guardarUsuario(usuario);
+            return ResponseEntity.ok("Usuario guardado correctamente: " + nuevo.getNombre());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al guardar el usuario: " + e.getMessage());
+        }    
+
     }
 
     @GetMapping("/{id}")
-    public Usuarios buscarUsuarioPorId(@PathVariable Long id) {
-        return usuarioService.buscarUsuarioPorId(id);
+    public ResponseEntity<?> buscarUsuarioPorId(@PathVariable Long id){
+        Usuarios usuario = usuarioService.buscarUsuarioPorId(id);
+        if (usuario != null) {
+            return ResponseEntity.ok(usuario);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Usuario no encontrado con ID: " + id);
+        }
     }
 
     @GetMapping
-    public List<Usuarios> obtenerTodosLosUsuarios() {
-        return usuarioService.obtenerTodosLosUsuarios();
+    public ResponseEntity<?> obtenerTodosLosUsuarios(){
+        try {
+            return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener los usuarios: " + e.getMessage());
+        }
+
     }
 
     @PutMapping("/{id}")
-    public Usuarios modificarUsuario(@PathVariable Long id, @RequestBody Usuarios usuario) {
-        return usuarioService.modificarUsuario(id, usuario);
+    public ResponseEntity<?> modificarUsuario(@PathVariable Long id, @RequestBody Usuarios usuario){
+        try {
+            Usuarios usuarioModificado = usuarioService.modificarUsuario(id, usuario);
+            return ResponseEntity.ok("Usuario modificado correctamente: " + usuarioModificado.getNombre());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al modificar el usuario: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void eliminarUsuarioPorId(@PathVariable Long id) {
-        usuarioService.eliminarUsuarioPorId(id);
+    public ResponseEntity<?> eliminarUsuarioPorId(@PathVariable Long id){
+        try {
+            usuarioService.eliminarUsuarioPorId(id);
+            return ResponseEntity.ok("Usuario eliminado correctamente con ID: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el usuario: " + e.getMessage());
+        }
     }
 
     @PostMapping("/login")
