@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import com.example.ControlStock.Model.Stock;
 import com.example.ControlStock.Repository.StockRepositorio;
 
-
 @Configuration
 public class StockConfig {
 

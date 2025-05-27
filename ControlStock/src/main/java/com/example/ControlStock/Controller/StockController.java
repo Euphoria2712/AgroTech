@@ -48,34 +48,34 @@ public class StockController {
     @Autowired
     private ClientClient ClientClient;
 
-@PostMapping("/ajustar")
-public ResponseEntity<?> ajustarStock(@RequestBody AjusteStockDTO request) {
-    try {
-        // Validar cliente
-        UsuarioDTO usuario = ClientClient.obtenerUsuarioPorId(request.getId()).block();
-        if (usuario == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(" Usuario no encontrado con ID: " + request.getId());
+    @PostMapping("/ajustar")
+    public ResponseEntity<?> ajustarStock(@RequestBody AjusteStockDTO request) {
+        try {
+            // Validar cliente
+            UsuarioDTO usuario = ClientClient.obtenerUsuarioPorId(request.getId()).block();
+            if (usuario == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(" Usuario no encontrado con ID: " + request.getId());
+            }
+
+            // Ajustar stock a través del servicio
+            Stock stock = StockService.ajustarStock(request.getProductoId(), request.getCantidadSolicitada());
+
+            // Verificar si después del ajuste el stock quedó bajo el mínimo
+            if (stock.getCantidadActual() < stock.getCantidadMinima()) {
+                NotificacionDTO alerta = new NotificacionDTO();
+                alerta.setProductoId(stock.getProductoId());
+                alerta.setMensaje(" Stock crítico tras ajuste. Producto ID: " + stock.getProductoId());
+                alerta.setTipo("ALERTA");
+                notificacionClient.enviarNotificacion(alerta).subscribe();
+            }
+
+            return ResponseEntity.ok(" Stock ajustado correctamente para el producto " + stock.getProductoId());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(" Error al ajustar el stock: " + e.getMessage());
         }
-
-        // Ajustar stock a través del servicio
-        Stock stock = StockService.ajustarStock(request.getProductoId(), request.getCantidadSolicitada());
-
-        // Verificar si después del ajuste el stock quedó bajo el mínimo
-        if (stock.getCantidadActual() < stock.getCantidadMinima()) {
-            NotificacionDTO alerta = new NotificacionDTO();
-            alerta.setProductoId(stock.getProductoId());
-            alerta.setMensaje(" Stock crítico tras ajuste. Producto ID: " + stock.getProductoId());
-            alerta.setTipo("ALERTA");
-            notificacionClient.enviarNotificacion(alerta).subscribe();
-        }
-
-        return ResponseEntity.ok(" Stock ajustado correctamente para el producto " + stock.getProductoId());
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(" Error al ajustar el stock: " + e.getMessage());
     }
-}
 
     @PostMapping("/consultar")
     public ResponseEntity<?> consultarStock(@RequestBody ConsultaStockRequest request) {
@@ -111,10 +111,9 @@ public ResponseEntity<?> ajustarStock(@RequestBody AjusteStockDTO request) {
                 alerta.setTipo("ALERTA");
 
                 notificacionClient.enviarNotificacion(alerta)
-                    .subscribe(
-                        resp -> System.out.println("Notificación enviada: " + resp),
-                        error -> System.err.println("Error al enviar notificación: " + error.getMessage())
-                    );
+                        .subscribe(
+                                resp -> System.out.println("Notificación enviada: " + resp),
+                                error -> System.err.println("Error al enviar notificación: " + error.getMessage()));
 
                 return ResponseEntity.ok("Stock bajo. Notificación enviada.");
             } else {
@@ -133,15 +132,15 @@ public ResponseEntity<?> ajustarStock(@RequestBody AjusteStockDTO request) {
     }
 
     @GetMapping("/Validarcliente/{id}")
-    public  ResponseEntity<String> validarCliente(@PathVariable Long id) {
+    public ResponseEntity<String> validarCliente(@PathVariable Long id) {
         ClientClient.obtenerUsuarioPorId(id)
-        .subscribe(usuario -> {
-            System.out.println("Usuario obtenido: " + usuario.getNombre());
-            
-        }, error -> {
-            System.err.println("Error al obtener el usuario: " + error.getMessage());
+                .subscribe(usuario -> {
+                    System.out.println("Usuario obtenido: " + usuario.getNombre());
 
-    });
+                }, error -> {
+                    System.err.println("Error al obtener el usuario: " + error.getMessage());
+
+                });
 
         return ResponseEntity.ok("Cliente validado correctamente revisar consola");
     }
