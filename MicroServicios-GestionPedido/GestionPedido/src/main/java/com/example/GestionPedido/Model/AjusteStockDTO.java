@@ -6,7 +6,7 @@ import lombok.Data;
 public class AjusteStockDTO {
     private Long id; // ID del cliente
     private Long productoId;
-    private int cantidad;
+    private int cantidadSolicitada;;
 
     // Getters y setters
     public Long getId() {
@@ -24,9 +24,9 @@ public class AjusteStockDTO {
     }
 
     public int getCantidad() {
-        return cantidad;
+        return cantidadSolicitada;
     }
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
+    public void setCantidad(int cantidadSolicitada) {
+        this.cantidadSolicitada = cantidadSolicitada;
     }
 }

@@ -91,28 +91,25 @@ public class PedidoService {
         return pedidoRepository.findByEstado(estado);
     }
 
-    public String crearPedido(Long Id, Long productoId, int cantidad) {
-        // Llamar al microservicio de stock
-        String resultado = stockClient.ajustarStock(Id, productoId, cantidad).block();
+    public String crearPedido(Long clienteId, Long productoId, int cantidad) {
+        String resultado = stockClient.ajustarStock(clienteId, productoId, cantidad).block();
 
-        if (resultado.contains("Error")) {
+        if (resultado == null || resultado.contains("Error")) {
             throw new RuntimeException("No se pudo ajustar el stock: " + resultado);
         }
 
-        // ✅ Crear y guardar el pedido
-        Pedido pedido = new Pedido();
-        pedido.setClienteId(String.valueOf(Id)); // clienteId es String en tu entidad
-        pedido.setIdProducto(productoId);
-        pedido.setCantidad(cantidad);
-        pedido.setFechaPedido(LocalDate.now());
-        pedido.setEstado(EstadoPedido.PENDIENTE);
-
-        // Puedes completar los demás campos con valores predeterminados o por lógica
-        pedido.setTransportistaId("porAsignar");
-        pedido.setEquipoId("equipoX"); // este campo es obligatorio según tu entidad
-        pedido.setTipoPedido(TipoPedido.STANDARD);
-        pedido.setFechaEntrega(LocalDate.now().plusDays(5));
-        pedido.setCondiciones("Condiciones normales");
+        Pedido pedido = Pedido.builder()
+                .clienteId(String.valueOf(clienteId))
+                .idProducto(productoId)
+                .cantidad(cantidad)
+                .fechaPedido(LocalDate.now())
+                .estado(EstadoPedido.PENDIENTE)
+                .transportistaId("porAsignar")
+                .equipoId("equipoX")
+                .tipoPedido(TipoPedido.STANDARD)
+                .fechaEntrega(LocalDate.now().plusDays(5))
+                .condiciones("Condiciones normales")
+                .build();
 
         pedidoRepository.save(pedido);
 

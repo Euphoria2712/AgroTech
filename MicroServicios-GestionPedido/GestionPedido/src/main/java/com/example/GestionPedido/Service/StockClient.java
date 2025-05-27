@@ -14,17 +14,15 @@ public class StockClient {
     private final WebClient webClient;
 
     @Autowired
-    public StockClient(WebClient.Builder builder) {
-        this.webClient = builder
-                .baseUrl("http://localhost:8084/api/v1/stock")
-                .build();
+    public StockClient(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public Mono<String> ajustarStock(Long id, Long productoId, int cantidad) {
         AjusteStockDTO dto = new AjusteStockDTO();
         dto.setId(id);
         dto.setProductoId(productoId);
-        dto.setCantidad(cantidad);
+        dto.setCantidadSolicitada(cantidad);
 
         return webClient.post()
                 .uri("/ajustar")
